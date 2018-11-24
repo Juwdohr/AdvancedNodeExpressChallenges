@@ -1,47 +1,87 @@
 'use strict';
 
-const express = require('express');
-const app = require('express')();
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const pug = require('pug');
-const session = require('express-session');
-const passport = require('passport');
-const mongo = require('mongodb').MongoClient;
-const ObjectID = require('mongodb').ObjectId;
-const bcrypt = require('bcrypt');
-const server = require('http').Server(app)
-const io = require('socket.io')(server)
+      /* Node Files */
+const bodyParser        = require('body-parser'),
+      cookieParser      = require('cookie-parser'),
+      cors              = require('cors'),
+      db                = require('mongodb'),
+      express           = require('express'),
+      passport          = require('passport'),
+      passportSocketIo  = require('passport.socketio'),
+      pug               = require('pug'),
+      session           = require('express-session'),
+      bcrypt            = require('bcrypt'),
+      
+      /* Local Files */
+      auth              = require('./app/Auth.js'),
+      fccTesting        = require('./freeCodeCamp/fcctesting.js'),
+      routes            = require('./app/Routes.js'),
+      
+      /* Application Setup */
+      app               = express(),
+      http              = require('http').Server(app),
+      io                = require('socket.io')(http),
+      mongo             = db.MongoClient,
+      ObjectID          = db.ObjectId,
+      sessionStore      = new session.MemoryStore();
 
-/* Local Files */
-const auth = require('./app/Auth.js');
-const routes = require('./app/Routes.js');
-const fccTesting  = require('./freeCodeCamp/fcctesting.js');
-
+/* Application Settings */
 app.set('view engine', 'pug');
-
 app.use(cors());
-fccTesting(app); //For FCC testing purposes
 app.use('/public', express.static(process.cwd() + '/public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(session({
+  key:                'connect.sid',
+  saveUninitialized:  true,
+  secret:             process.env.SECRET,
+  store:              sessionStore,
+  resave:             false,
+}));
+app.use( passport.initialize() );
+app.use( passport.session() );
 
-
+/* Application */
 mongo.connect(process.env.DATABASE, (err, db) => {
-  if(err) {
-    console.log(`Database error: ${err}`);
-  } else {
-    console.log('Successful database connection');
+  if(err) console.log(`Database error: ${err}`);
     
-    auth(app, db);
-    routes(app, db);
+  console.log('Successful database connection');
+
+  auth(app, db);
+  routes(app, db, io);
+
+  http.listen(process.env.PORT || 3000, () => {
+    console.log("Listening on port: " + process.env.PORT);
+  });
+  
+  io.use(passportSocketIo.authorize({
+    cookieParser: cookieParser,
+    key:          'connect.sid',
+    secret:       process.env.SECRET,
+    store:        sessionStore,
+  }))
+
+  let currentUsers = 0;
+
+  io.on('connection', (socket) => {
     
-    app.listen(process.env.PORT || 3000, () => {
-      console.log("Listening on port: " + process.env.PORT);
+    const { user } = socket.request;
+    
+    ++currentUsers;
+    io.emit('user', { name: user.name, currentUsers, connected: true });
+    
+    socket.on('chat message', (msg) => {
+      io.emit('chat message', {name: user.name, message: msg})
+    })
+    
+    socket.on('disconnect', () => {
+      
+      --currentUsers;
+      io.emit('user', { name: user.name, currentUsers, connected: true });
+      
     });
-    
-    io.on('connection', socket => {
-      io.emit('users', 'a user connected');
-    });
-  }
+  });
+  
 });
+
+fccTesting(app); //For FCC testing purposes

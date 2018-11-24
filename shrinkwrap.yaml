@@ -1,6 +1,8 @@
 dependencies:
   bcrypt: 3.0.2
   body-parser: 1.18.3
+  cookie-parser: 1.4.3
+  cookieparser: 0.1.0
   cors: 2.8.5
   express: 4.16.4
   express-session: 1.15.6
@@ -9,8 +11,10 @@ dependencies:
   passport: 0.4.0
   passport-github: 1.1.0
   passport-local: 1.0.0
+  passport.socketio: 3.7.0
   pug: 2.0.3
   socket.io: 2.1.1
+  socket.io-client: 2.1.1
 packages:
   /@types/babel-types/7.0.4:
     dev: false
@@ -254,6 +258,15 @@ packages:
       node: '>= 0.6'
     resolution:
       integrity: sha512-hIP3EEPs8tB9AT1L+NUqtwOAps4mk2Zob89MWXMHjHWg9milF/j4osnnQLXBCBFBk/tvIG/tUc9mOUJiPBhPXA==
+  /cookie-parser/1.4.3:
+    dependencies:
+      cookie: 0.3.1
+      cookie-signature: 1.0.6
+    dev: false
+    engines:
+      node: '>= 0.8.0'
+    resolution:
+      integrity: sha1-D+MfoZ0AC5X0qt8fU/3CuKIDuqU=
   /cookie-signature/1.0.6:
     dev: false
     resolution:
@@ -264,6 +277,10 @@ packages:
       node: '>= 0.6'
     resolution:
       integrity: sha1-5+Ch+e9DtMi6klxcWpboBtFoc7s=
+  /cookieparser/0.1.0:
+    dev: false
+    resolution:
+      integrity: sha1-6hLLEIXBdPMWf66veYX3mr5nHQ4=
   /core-js/2.5.7:
     dev: false
     resolution:
@@ -809,6 +826,12 @@ packages:
       node: '>= 0.4.0'
     resolution:
       integrity: sha1-tVOaqPwiWj0a0XlHbd8ja0QPUuQ=
+  /passport.socketio/3.7.0:
+    dependencies:
+      xtend: 4.0.1
+    dev: false
+    resolution:
+      integrity: sha1-LuX6/paV1CgcjN3T/pdezRjmcm4=
   /passport/0.4.0:
     dependencies:
       passport-strategy: 1.0.0
@@ -1269,6 +1292,12 @@ packages:
       node: '>=0.4.0'
     resolution:
       integrity: sha1-wodrBhaKrcQOV9l+gRkayPQ5iz4=
+  /xtend/4.0.1:
+    dev: false
+    engines:
+      node: '>=0.4'
+    resolution:
+      integrity: sha1-pcbVMr5lbiPbgg77lDofBJmNY68=
   /yargs/3.10.0:
     dependencies:
       camelcase: 1.2.1
@@ -1288,6 +1317,8 @@ shrinkwrapVersion: 3
 specifiers:
   bcrypt: ^3.0.2
   body-parser: ^1.16.0
+  cookie-parser: ^1.4.3
+  cookieparser: ^0.1.0
   cors: ^2.8.1
   express: ^4.14.1
   express-session: ^1.15.6
@@ -1296,5 +1327,7 @@ specifiers:
   passport: ^0.4.0
   passport-github: ^1.1.0
   passport-local: ^1.0.0
+  passport.socketio: ^3.7.0
   pug: ^2.0.3
   socket.io: ^2.1.1
+  socket.io-client: ^2.1.1

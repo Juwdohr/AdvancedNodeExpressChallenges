@@ -7,16 +7,8 @@ const bcrypt = require('bcrypt');
 
 module.exports = function(app, db) {
   
-  app.use(session({
-    secret: process.env.SECRET,
-    saveUninitialized: true,
-    resave: true,
-  }));
-  app.use(passport.initialize());
-  app.use(passport.session());
-  
   passport.use(new LocalStrategy( function (username, password, done) {
-        db.collection('users').findOne({ username: username }, function(err, user) {
+    db.collection('users').findOne({ name: username }, function(err, user) {
           console.log(`User ${username} attempted to log in.`);
           
           if (err) { return done(err); }
@@ -27,8 +19,7 @@ module.exports = function(app, db) {
           
           return done(null, user);
         });
-      }
-  ));
+  }));
   
   passport.use(new GithubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID,
@@ -40,7 +31,7 @@ module.exports = function(app, db) {
     const  queryOptions = {
       $setOnInsert: {
         id: profile.id,
-        username: profile.displayName || 'John Doe',
+        name: profile.displayName || 'John Doe',
         photo: profile.avatar_url || '',
         email: profile.email || 'No Public Email',
         created_on: new Date(),
@@ -70,6 +61,7 @@ module.exports = function(app, db) {
   passport.serializeUser((user, done) => {
     done(null, user._id);
   });
+  
   passport.deserializeUser((id, done) => {
     const query = { _id: new ObjectID(id) }
     db.collection('users').findOne(query, (err, doc) => {
@@ -83,4 +75,5 @@ module.exports = function(app, db) {
       
     })
   });
+  
 }

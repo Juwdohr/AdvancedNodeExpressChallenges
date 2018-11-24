@@ -15,7 +15,7 @@ module.exports = function(app, db) {
         res.redirect('/');
       } else {
         const hash = bcrypt.hashSync(req.body.password, 12);
-        db.collection('users').insertOne({username: req.body.username, password: hash}, (err, doc) => {
+        db.collection('users').insertOne({name: req.body.username, password: hash}, (err, doc) => {
           if(err) {
             res.redirect('/');
           } else {
@@ -38,7 +38,7 @@ module.exports = function(app, db) {
   });
   
   app.route('/login').post(passport.authenticate('local', { failureRedirect: '/' }), (req, res) => {
-    res.redirect('/profile');
+    res.redirect('/chat');
   });
 
   function ensureAuthenticated(req, res, next) {
